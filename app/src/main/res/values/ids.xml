@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="etFname" type="id" />
+    <item name="etLname" type="id" />
+    <item name="etPhone" type="id" />
+    <item name="emailId" type="id" />
+    <item name="passwordId" type="id" />
+    <item name="confirm_passwordId" type="id" />
+    <item name="btnSignUp" type="id" />
+    <item name="tvSignIn" type="id" />
+    <item name="etDob" type="id" />
+    <item name="editTextTextPersonName" type="id" />
+    <item name="editTextTextPersonName2" type="id" />
+    <item name="editTextTextPersonName3" type="id" />
+    <item name="editTextTextPersonName4" type="id" />
+    <item name="editTextTextPersonName5" type="id" />
+    <item name="editTextTextPersonName6" type="id" />
+    <item name="editTextTextPersonName7" type="id" />
+</resources>

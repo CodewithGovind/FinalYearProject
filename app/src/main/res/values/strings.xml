@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Assistant</string>
+
+    <string name="nameerror">Enter a valid name</string>
+    <string name="emailerror">Enter a valid email</string>
+    <string name="mobileerror">Enter a valid phone number</string>
+    <string name="dateerror">Enter a valid date</string>
+    <string name="ageerror">Enter a valid age</string>
+    <string name="passerror">Enter six digit password</string>
+    <string name="confirmpasserror">Password does not match</string>
+    <string name="birtherror">Insert valid date of birth</string>
+</resources>
