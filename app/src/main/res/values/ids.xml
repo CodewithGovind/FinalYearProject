@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="etFname" type="id" />
-    <item name="etLname" type="id" />
-    <item name="etPhone" type="id" />
-    <item name="emailId" type="id" />
-    <item name="passwordId" type="id" />
-    <item name="confirm_passwordId" type="id" />
+    <item name="et_first_name" type="id" />
+    <item name="et_last_name" type="id" />
+    <item name="et_phone_number" type="id" />
+    <item name="email_id" type="id" />
+    <item name="login_password" type="id" />
+    <item name="confirm_password" type="id" />
     <item name="btnSignUp" type="id" />
-    <item name="tvSignIn" type="id" />
-    <item name="etDob" type="id" />
-    <item name="editTextTextPersonName" type="id" />
-    <item name="editTextTextPersonName2" type="id" />
-    <item name="editTextTextPersonName3" type="id" />
-    <item name="editTextTextPersonName4" type="id" />
-    <item name="editTextTextPersonName5" type="id" />
-    <item name="editTextTextPersonName6" type="id" />
-    <item name="editTextTextPersonName7" type="id" />
+    <item name="signIn_text" type="id" />
+    <item name="et_Dob" type="id" />
+    <item name="label_email" type="id" />
+    <item name="label_pswd" type="id" />
+    <item name="label_Person_DOB" type="id" />
+    <item name="label_phone_number" type="id" />
+    <item name="label_email_id" type="id" />
+    <item name="label_password" type="id" />
+    <item name="label_conf_passwrd" type="id" />
 </resources>

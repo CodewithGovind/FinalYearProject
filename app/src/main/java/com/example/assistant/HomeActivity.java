@@ -1,4 +1,4 @@
-package com.example.imagepro;
+package com.example.assistant;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +28,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
@@ -38,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int MY_PERMISSIONS_REQUEST_BLUETOOTH = 103;
     public static final int RECORD_AUDIO_CODE = 104;
@@ -139,14 +141,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home);
 
         context = this;
         int MY_PERMISSIONS_REQUEST_CAMERA=0;
         // if camera permission is not given it will ask for it on device
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CAMERA, Manifest.permission.BLUETOOTH_ADMIN}, MY_PERMISSIONS_REQUEST_CAMERA);
+            ActivityCompat.requestPermissions(HomeActivity.this, new String[] {Manifest.permission.CAMERA, Manifest.permission.BLUETOOTH_ADMIN}, MY_PERMISSIONS_REQUEST_CAMERA);
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},RECORD_AUDIO_CODE);
@@ -165,10 +167,10 @@ public class MainActivity extends AppCompatActivity {
                 if (status == TextToSpeech.SUCCESS){
                     int result = mTTS.setLanguage(Locale.ENGLISH);
                     if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
-                        Toast.makeText(MainActivity.this, "Language not supported...!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, "Language not supported...!", Toast.LENGTH_SHORT).show();
                     }
                 }else {
-                    Toast.makeText(MainActivity.this,"Initialization failed...!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeActivity.this,"Initialization failed...!", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -208,18 +210,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode==RECORD_AUDIO_CODE){
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(MainActivity.this,"Mic Permission granted...!", Toast.LENGTH_SHORT);
+                Toast.makeText(HomeActivity.this,"Mic Permission granted...!", Toast.LENGTH_SHORT);
             }
             else {
-                Toast.makeText(MainActivity.this,"Mic Permission Denied...!", Toast.LENGTH_SHORT);
+                Toast.makeText(HomeActivity.this,"Mic Permission Denied...!", Toast.LENGTH_SHORT);
             }
         }
         if (requestCode==CAMERA_REQUEST_CODE){
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(MainActivity.this,"Camera Permission granted...!", Toast.LENGTH_SHORT);
+                Toast.makeText(HomeActivity.this,"Camera Permission granted...!", Toast.LENGTH_SHORT);
             }
             else {
-                Toast.makeText(MainActivity.this,"Camera Permission Denied...!", Toast.LENGTH_SHORT);
+                Toast.makeText(HomeActivity.this,"Camera Permission Denied...!", Toast.LENGTH_SHORT);
             }
         }
     }
@@ -276,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
                 if (action == KeyEvent.ACTION_DOWN){
                     speak("hello, tell me how can i help you");
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -296,8 +298,8 @@ public class MainActivity extends AppCompatActivity {
             Uri selectedImageUri=data.getData();
 
             if (selectedImageUri!=null){
-               Log.d("MainActivity","Outpu Uri: "+selectedImageUri);
-               // to bitmap
+                Log.d("MainActivity","Outpu Uri: "+selectedImageUri);
+                // to bitmap
                 Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),selectedImageUri);
@@ -407,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
             }catch (InterruptedException e){
                 e.printStackTrace();
             }
-            startActivity(new Intent(MainActivity.this,CameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            startActivity(new Intent(HomeActivity.this,CameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }else if (result.equals("tell me something about you")){
             speak("ok, i am voice assistant created for voice interaction. Now tell me how can help you");
             try {
@@ -433,7 +435,17 @@ public class MainActivity extends AppCompatActivity {
             startSpeechRecognition();
 
         }else if (result.equals("log me out")){
-            speak("Sorry I cant do that now");
+
+            speak("ok you are logged out now");
+            try {
+                Thread.sleep(1000);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(HomeActivity.this, "You're logged out", Toast.LENGTH_SHORT).show();
+            Intent inToMain = new Intent(HomeActivity.this, LoginActivity.class);
+            startActivity(inToMain);
 
         }else if (result.equals("yes")){
             speak("what is it ");
@@ -480,3 +492,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+
+
+
+
+
+

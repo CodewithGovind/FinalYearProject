@@ -1,12 +1,12 @@
-package com.example.imagepro;
+package com.example.assistant;
 
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.checkerframework.checker.units.qual.A;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -17,7 +17,6 @@ import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.GpuDelegate;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,6 +26,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -46,8 +46,12 @@ public class objectDetectorClass {
     private int height=0;
     private  int width=0;
 
-    ArrayList<String> OUTPUT_LIST = new ArrayList<String>();
+
+//    ArrayList<String> OUTPUT_LIST = new ArrayList<String>();
     ArrayList<String> output_list = new ArrayList<String>();
+    String object = null;
+
+    HomeActivity homeActivity = new HomeActivity();
 
     objectDetectorClass(AssetManager assetManager,String modelPath, String labelPath,int inputSize) throws IOException{
         INPUT_SIZE=inputSize;
@@ -162,8 +166,10 @@ public class objectDetectorClass {
                 // write text on frame
                                                 // string of class name of object  // starting point                         // color of text           // size of text
                 Imgproc.putText(rotated_mat_image,labelList.get((int) class_value),new Point(left,top),3,1,new Scalar(255, 0, 0, 255),2);
-
+                output_list.add(i, labelList.get((int) class_value));
             }
+
+
 
         }
         // select device and run

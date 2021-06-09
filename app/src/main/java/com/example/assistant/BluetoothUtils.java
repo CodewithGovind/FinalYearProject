@@ -1,4 +1,4 @@
-package com.example.imagepro;
+package com.example.assistant;
 
 
 import android.bluetooth.BluetoothAdapter;
@@ -47,7 +47,7 @@ public class BluetoothUtils {
 
     public synchronized void setState(int state) {
         this.state = state;
-        handler.obtainMessage(MainActivity.MESSAGE_STATE_CHANGED, state, -1).sendToTarget();
+        handler.obtainMessage(HomeActivity.MESSAGE_STATE_CHANGED, state, -1).sendToTarget();
     }
 
     private synchronized void start() {
@@ -169,7 +169,7 @@ public class BluetoothUtils {
                 try {
                     bytes = inputStream.read(buffer);
                     Log.d("Input debugging-> ", buffer.toString());
-                    handler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                    handler.obtainMessage(HomeActivity.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
                     connectionLost();
                 }
@@ -179,7 +179,7 @@ public class BluetoothUtils {
         public void write(byte[] buffer) {
             try {
                 outputStream.write(buffer);
-                handler.obtainMessage(MainActivity.MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
+                handler.obtainMessage(HomeActivity.MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
             } catch (IOException e) {
 
             }
@@ -195,9 +195,9 @@ public class BluetoothUtils {
     }
 
     private void connectionLost() {
-        Message message = handler.obtainMessage(MainActivity.MESSAGE_TOAST);
+        Message message = handler.obtainMessage(HomeActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(MainActivity.TOAST, "Connection Lost");
+        bundle.putString(HomeActivity.TOAST, "Connection Lost");
         message.setData(bundle);
         handler.sendMessage(message);
 
@@ -205,9 +205,9 @@ public class BluetoothUtils {
     }
 
     private synchronized void connectionFailed() {
-        Message message = handler.obtainMessage(MainActivity.MESSAGE_TOAST);
+        Message message = handler.obtainMessage(HomeActivity.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(MainActivity.TOAST, "Cant connect to the device");
+        bundle.putString(HomeActivity.TOAST, "Cant connect to the device");
         message.setData(bundle);
         handler.sendMessage(message);
 
@@ -228,9 +228,9 @@ public class BluetoothUtils {
         connectedThread = new ConnectedThread(socket);
         connectedThread.start();
 
-        Message message = handler.obtainMessage(MainActivity.MESSAGE_DEVICE_NAME);
+        Message message = handler.obtainMessage(HomeActivity.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
-        bundle.putString(MainActivity.DEVICE_NAME, device.getName());
+        bundle.putString(HomeActivity.DEVICE_NAME, device.getName());
         message.setData(bundle);
         handler.sendMessage(message);
 

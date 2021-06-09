@@ -1,4 +1,4 @@
-package com.example.imagepro;
+package com.example.assistant;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -7,27 +7,45 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class CameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2{
+public class CaptureImage extends Activity implements CameraBridgeViewBase.CvCameraViewListener2{
+
     private static final String TAG="MainActivity";
 
     private Mat mRgba;
     private Mat mGray;
     private CameraBridgeViewBase mOpenCvCameraView;
     private objectDetectorClass objectDetectorClass;
+
+    // now we define integer that represents camera
+    // 0 - back camera
+    // 1- front camera
+    // initially it will start with back camera
+    private int mCameraID = 0 ;
+    private ImageView take_picture_button;
+    private int take_image=0;
     private BaseLoaderCallback mLoaderCallback =new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -47,24 +65,36 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
     };
 
-    public CameraActivity(){
+    public CaptureImage(){
         Log.i(TAG,"Instantiated new "+this.getClass());
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         int MY_PERMISSIONS_REQUEST_CAMERA=0;
         // if camera permission is not given it will ask for it on device
-        if (ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(CaptureImage.this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions(CameraActivity.this, new String[] {Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
+            ActivityCompat.requestPermissions(CaptureImage.this, new String[] {Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_CAMERA);
         }
 
-        setContentView(R.layout.activity_camera);
+        if (ContextCompat.checkSelfPermission(CaptureImage.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(CaptureImage.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+        }
+        if (ContextCompat.checkSelfPermission(CaptureImage.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(CaptureImage.this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_CAMERA);
+        }
+
+        setContentView(R.layout.activity_capture_image);
+
+        take_picture_button=findViewById(R.id.capture_image_button);
 
         mOpenCvCameraView=(CameraBridgeViewBase) findViewById(R.id.frame_Surface);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -78,7 +108,23 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             Log.d("MainActivity","Getting some error");
             e.printStackTrace();
         }
+
+        take_picture_button=findViewById(R.id.capture_image_button);
+        // if take image ==1 then take picture
+        take_picture_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (take_image==0){
+                    take_image=1;
+                }
+                else {
+                    take_image=0;
+                }
+            }
+        });
+
     }
+
 
     @Override
     protected void onResume() {
@@ -121,13 +167,43 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
         mRgba=inputFrame.rgba();
         mGray=inputFrame.gray();
-        // Before watching this video please watch previous video of loading tensorflow lite model
 
-        // now call that function
-        Mat out=new Mat();
-        out=objectDetectorClass.recognizeImage(mRgba);
 
-        return out;
+        // create function to take picture
+        take_image=take_picture_func_rgb(take_image,mRgba);
+
+        return mRgba;
+
     }
 
+    private int take_picture_func_rgb(int take_image, Mat mRgba) {
+        //add permission for local strorage
+
+        if (take_image==1){
+            Log.d("CaptireImage","It is working");
+            Mat save_mat=new Mat();
+            // rotate
+            Core.flip(mRgba.t(),save_mat,1);
+            // convert image rgba to bgra
+            Imgproc.cvtColor(save_mat,save_mat,Imgproc.COLOR_RGB2BGRA);
+            // create a new folder Images we will save all image into that folder
+            File folder=new File(Environment.getExternalStorageDirectory().getParent()+"/Images");
+            // check folder exist or not
+            // if no create it
+            boolean success=true;
+            if (!folder.exists()){
+                success=folder.mkdirs();
+            }
+            // we have to create unique filename
+
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
+            String currentDateTime=sdf.format(new Date());
+            String filename=Environment.getExternalStorageDirectory().getPath()+"/Images"+currentDateTime+".jpg";
+            // write save mat
+            Imgcodecs.imwrite(filename,save_mat);
+            take_image=0;
+        }
+
+        return take_image;
+    }
 }
